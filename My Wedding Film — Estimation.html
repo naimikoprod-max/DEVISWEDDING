@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Wedding Film — Estimation</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; background: #0D0D0D; color: #F0EDE6; min-height: 100vh; }
+.app { max-width: 620px; margin: 0 auto; padding: 0 18px 60px; }
+
+.header { text-align: center; padding: 36px 0 26px; border-bottom: 1px solid #222; margin-bottom: 28px; }
+.logo { font-size: 30px; font-style: italic; color: #D4B896; letter-spacing: 0.06em; margin-bottom: 3px; }
+.logo-by { font-size: 11px; color: #555; letter-spacing: 0.18em; text-transform: uppercase; font-family: -apple-system, sans-serif; }
+
+.progress { display: flex; gap: 6px; margin-bottom: 28px; }
+.prog-item { flex: 1; }
+.prog-bar { height: 1px; background: #222; margin-bottom: 5px; transition: background 0.4s; }
+.prog-bar.active { background: linear-gradient(90deg, #D4B896, #E8D4B8); }
+.prog-bar.done { background: #D4B896; }
+.prog-label { font-size: 10px; color: #444; font-family: -apple-system, sans-serif; letter-spacing: 0.06em; }
+.prog-label.cur { color: #D4B896; }
+.prog-label.dn { color: #888; }
+
+h2 { font-size: 24px; font-weight: 400; font-style: italic; color: #F0EDE6; margin-bottom: 5px; }
+.sub { font-size: 13px; color: #666; margin-bottom: 22px; line-height: 1.65; font-family: -apple-system, sans-serif; }
+
+.type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.type-btn { background: #141414; border: 1px solid #222; border-radius: 14px; padding: 22px 12px 18px; cursor: pointer; text-align: center; transition: all 0.2s; color: #F0EDE6; }
+.type-btn:hover { border-color: #D4B89644; }
+.type-btn.sel { border: 1.5px solid #D4B896; background: #1a1710; }
+.type-btn .ti { font-size: 26px; margin-bottom: 8px; display: block; }
+.type-btn .tl { font-size: 13px; font-family: -apple-system, sans-serif; font-weight: 500; }
+.type-btn.sel .tl { color: #D4B896; }
+.multiday-link { text-align: center; margin-top: 8px; }
+.multiday-link button { background: none; border: none; color: #555; cursor: pointer; font-size: 12px; font-family: -apple-system, sans-serif; font-style: italic; text-decoration: underline; }
+.multiday-link button:hover { color: #D4B896; }
+
+.forfait-card { background: #141414; border: 1px solid #222; border-radius: 16px; padding: 20px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+.forfait-card:hover { border-color: #D4B89644; }
+.forfait-card.sel { border: 1.5px solid #D4B896; background: #1a1710; }
+.forfait-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.f-tag { font-size: 10px; color: #555; font-family: -apple-system, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px; }
+.f-name { font-size: 20px; font-style: italic; color: #D4B896; }
+.f-price { font-size: 26px; font-weight: 400; color: #F0EDE6; text-align: right; }
+.f-ttc { font-size: 11px; color: #555; font-family: -apple-system, sans-serif; }
+.f-badge { display: inline-block; background: #D4B89615; border: 1px solid #D4B89640; border-radius: 20px; padding: 3px 11px; font-size: 10px; color: #D4B896; font-family: -apple-system, sans-serif; letter-spacing: 0.05em; margin-bottom: 10px; }
+.f-hours { display: inline-flex; align-items: center; gap: 6px; background: #0D0D0D; border: 1px solid #222; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-family: -apple-system, sans-serif; color: #888; margin-bottom: 12px; }
+.f-items { list-style: none; }
+.f-items li { font-size: 12px; font-family: -apple-system, sans-serif; color: #888; padding: 5px 0; border-bottom: 1px solid #1a1a1a; display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; }
+.f-items li:last-child { border-bottom: none; }
+.fi-dot { color: #D4B896; font-size: 10px; margin-top: 2px; flex-shrink: 0; }
+.fi-cond { color: #444; font-size: 11px; font-style: italic; display: block; margin-top: 1px; }
+.fi-free { display: inline-block; background: #D4B89615; border: 1px solid #D4B89635; border-radius: 10px; padding: 1px 7px; font-size: 10px; color: #D4B896; margin-left: 4px; }
+
+.photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.photo-card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 16px 14px; cursor: pointer; transition: all 0.2s; }
+.photo-card:hover { border-color: #D4B89644; }
+.photo-card.sel { border: 1.5px solid #D4B896; background: #1a1710; }
+.pc-hours { font-size: 18px; font-style: italic; color: #D4B896; margin-bottom: 4px; }
+.photo-card.sel .pc-hours { color: #D4B896; }
+.pc-photos { font-size: 12px; font-family: -apple-system, sans-serif; color: #888; margin-bottom: 8px; line-height: 1.4; }
+.pc-price { font-size: 20px; font-weight: 400; color: #F0EDE6; }
+.pc-ttc { font-size: 11px; color: #555; font-family: -apple-system, sans-serif; }
+
+.slabel { font-size: 10px; font-family: -apple-system, sans-serif; font-weight: 600; color: #444; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; margin-top: 20px; }
+.section-divider { font-size: 15px; font-style: italic; color: #D4B896; margin: 20px 0 6px; }
+.section-sub { font-size: 12px; color: #555; font-family: -apple-system, sans-serif; margin-bottom: 12px; }
+
+.opt-row { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; transition: all 0.15s; }
+.opt-row:hover { border-color: #D4B89644; }
+.opt-row.on { border: 1.5px solid #D4B896; background: #1a1710; }
+.opt-row.incl { opacity: 0.5; cursor: default; }
+.opt-icon { font-size: 18px; flex-shrink: 0; }
+.opt-body { flex: 1; }
+.opt-label { font-size: 13px; font-family: -apple-system, sans-serif; font-weight: 500; color: #F0EDE6; }
+.opt-row.on .opt-label { color: #D4B896; }
+.opt-desc { font-size: 11px; color: #555; font-family: -apple-system, sans-serif; margin-top: 2px; }
+.opt-price { font-size: 13px; font-weight: 600; font-family: -apple-system, sans-serif; color: #666; white-space: nowrap; }
+.opt-row.on .opt-price { color: #D4B896; }
+.opt-check { width: 18px; height: 18px; border-radius: 50%; border: 1px solid #333; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; transition: all 0.15s; }
+.opt-check.on { background: #D4B896; border-color: #D4B896; color: #0D0D0D; }
+.opt-incl-tag { font-size: 10px; color: #555; font-family: -apple-system, sans-serif; font-style: italic; white-space: nowrap; }
+
+.note-box { background: #141414; border: 1px solid #222; border-radius: 10px; padding: 10px 14px; font-size: 12px; font-family: -apple-system, sans-serif; color: #555; display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; line-height: 1.5; }
+.date-input { width: 100%; background: #141414; border: 1px solid #222; border-radius: 10px; color: #F0EDE6; padding: 11px 14px; font-size: 13px; font-family: -apple-system, sans-serif; margin-bottom: 14px; }
+.date-input:focus { outline: none; border-color: #D4B896; }
+.dist-row { background: #141414; border: 1px solid #222; border-radius: 10px; padding: 11px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; transition: all 0.15s; }
+.dist-row:hover { border-color: #D4B89644; }
+.dist-row.sel { border: 1.5px solid #D4B896; background: #1a1710; }
+.dist-row .dl { font-size: 13px; font-family: -apple-system, sans-serif; color: #F0EDE6; }
+.dist-row .dp { font-size: 12px; font-family: -apple-system, sans-serif; font-weight: 600; color: #555; }
+.dist-row.sel .dp { color: #D4B896; }
+
+.nav { display: flex; gap: 10px; margin-top: 28px; }
+.btn-back { flex: 1; padding: 13px; background: transparent; border: 1px solid #222; border-radius: 12px; color: #555; cursor: pointer; font-size: 13px; font-family: -apple-system, sans-serif; }
+.btn-next { flex: 2; padding: 13px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; font-family: -apple-system, sans-serif; }
+.btn-next.go { background: linear-gradient(135deg, #D4B896, #E8D4B8); color: #0D0D0D; font-weight: 600; }
+.btn-next.gen { background: linear-gradient(135deg, #D4B896, #F0EDE6); color: #0D0D0D; font-weight: 700; }
+.btn-next:disabled { background: #141414; color: #333; cursor: not-allowed; border: 1px solid #222; }
+
+.result-hero { background: linear-gradient(160deg, #1a1710, #141414); border: 1px solid #D4B89644; border-radius: 18px; padding: 30px 24px; text-align: center; margin-bottom: 16px; }
+.rh-tag { font-size: 10px; color: #555; font-family: -apple-system, sans-serif; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+.rh-name { font-size: 28px; font-style: italic; color: #D4B896; margin-bottom: 10px; }
+.rh-price { font-size: 54px; font-weight: 400; color: #F0EDE6; line-height: 1; margin-bottom: 4px; }
+.rh-ttc { font-size: 12px; color: #555; font-family: -apple-system, sans-serif; margin-bottom: 14px; }
+.rh-pill { display: inline-flex; align-items: center; gap: 6px; background: #D4B89618; border: 1px solid #D4B89640; border-radius: 20px; padding: 5px 16px; font-size: 12px; font-family: -apple-system, sans-serif; color: #D4B896; }
+
+.rc { background: #141414; border: 1px solid #222; border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+.rc-hd { font-size: 10px; color: #444; font-family: -apple-system, sans-serif; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid #1a1a1a; }
+.rc-line { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid #1a1a1a; font-family: -apple-system, sans-serif; }
+.rc-line:last-child { border-bottom: none; }
+.rc-dot { color: #D4B896; font-size: 10px; flex-shrink: 0; margin-top: 3px; }
+.rc-txt { font-size: 13px; color: #888; line-height: 1.4; flex: 1; }
+.rc-cond { font-size: 11px; color: #444; font-style: italic; display: block; margin-top: 1px; }
+.rc-p { font-size: 12px; color: #D4B896; font-weight: 600; white-space: nowrap; padding-left: 10px; }
+
+.drone-note { background: #1a1710; border: 1px solid #D4B89622; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; font-size: 12px; font-family: -apple-system, sans-serif; color: #555; line-height: 1.6; }
+.drone-note strong { color: #D4B896; }
+
+.cta-box { background: linear-gradient(135deg, #1a1710, #141414); border: 1px solid #D4B89644; border-radius: 16px; padding: 22px; margin-bottom: 12px; }
+.cta-title { font-size: 20px; font-style: italic; color: #D4B896; margin-bottom: 5px; }
+.cta-sub { font-size: 13px; color: #666; margin-bottom: 18px; line-height: 1.6; font-family: -apple-system, sans-serif; }
+.field { margin-bottom: 10px; }
+.field label { font-size: 10px; color: #444; display: block; margin-bottom: 5px; font-family: -apple-system, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
+.field input, .field textarea { width: 100%; padding: 11px 13px; background: #0D0D0D; border: 1px solid #222; border-radius: 10px; color: #F0EDE6; font-size: 13px; font-family: -apple-system, sans-serif; }
+.field input:focus, .field textarea:focus { outline: none; border-color: #D4B896; }
+.field textarea { min-height: 60px; resize: vertical; }
+.btn-send { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #D4B896, #E8D4B8); color: #0D0D0D; margin-top: 4px; letter-spacing: 0.03em; }
+.btn-send:disabled { background: #141414; color: #333; cursor: not-allowed; border: 1px solid #222; }
+.ok-box { background: #141414; border: 1px solid #D4B89644; border-radius: 14px; padding: 26px; text-align: center; margin-bottom: 12px; }
+.ok-title { font-size: 20px; font-style: italic; color: #D4B896; margin-bottom: 6px; }
+.ok-text { font-size: 13px; color: #666; line-height: 1.7; font-family: -apple-system, sans-serif; }
+.btn-reset { width: 100%; padding: 12px; background: transparent; border: 1px solid #222; border-radius: 12px; color: #444; cursor: pointer; font-size: 12px; font-family: -apple-system, sans-serif; margin-top: 6px; }
+.multiday-box { background: #141414; border: 1px solid #D4B89644; border-radius: 16px; padding: 28px; text-align: center; margin-bottom: 14px; }
+.multiday-title { font-size: 22px; font-style: italic; color: #D4B896; margin-bottom: 10px; }
+.multiday-text { font-size: 13px; color: #666; font-family: -apple-system, sans-serif; line-height: 1.7; margin-bottom: 18px; }
+.btn-mailto { display: inline-block; padding: 13px 28px; background: linear-gradient(135deg, #D4B896, #E8D4B8); color: #0D0D0D; border-radius: 12px; font-size: 13px; font-family: -apple-system, sans-serif; font-weight: 600; cursor: pointer; border: none; text-decoration: none; }
+.spinner-wrap { text-align: center; padding: 50px 20px; }
+.spinner { width: 30px; height: 30px; border: 1.5px solid #222; border-top-color: #D4B896; border-radius: 50%; animation: sp 0.9s linear infinite; margin: 0 auto 14px; }
+@keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo">My Wedding Film</div>
+    <div class="logo-by">par Naimiko Prod · Photos & Film de mariage</div>
+  </div>
+  <div class="progress" id="progress"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+const STEPS=[{id:1,label:'Prestation'},{id:2,label:'Formule'},{id:3,label:'Options'},{id:4,label:'Détails'}];
+
+const PHOTO_ALACARTE=[
+  {id:'pa1',hours:'1h',fourchette:'~30 à 50 photos',price:169},
+  {id:'pa2',hours:'2h',fourchette:'~60 à 100 photos',price:329},
+  {id:'pa3',hours:'3h',fourchette:'~100 à 150 photos',price:489},
+  {id:'pa4',hours:'4h',fourchette:'~150 à 200 photos',price:649},
+];
+
+const FORFAITS={
+  photo:[
+    {id:'p1',name:'La Cérémonie',tag:'Forfait 1',price:1000,hours:'6h max',items:[
+      {t:'~150 à 250 photos retouchées'},{t:'Galerie privée HD'},
+      {t:'Sélection & retouche mariage soignée'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'p2',name:"L'Union",tag:'Forfait 2',price:1300,hours:'9h max',popular:true,items:[
+      {t:'~250 à 400 photos retouchées'},{t:'Galerie privée HD'},
+      {t:'Sélection & retouche mariage soignée'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'p3',name:'Le Grand Jour',tag:'Forfait 3',price:1600,hours:'12h max',items:[
+      {t:'~400 à 550 photos retouchées'},{t:'Galerie privée HD'},
+      {t:'Sélection & retouche mariage soignée'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+  ],
+  video:[
+    {id:'vi',name:"L'Instant",tag:'Mini-forfait',price:849,hours:'3h',items:[
+      {t:'Film de 3 min'},
+      {t:'Étalonnage, sound design, titrage'},
+      {t:'Reel Instagram',free:true,cond:'à activer dans les options'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'ve',name:"L'Essentiel",tag:'Mini-forfait',price:1049,hours:'4h30',items:[
+      {t:'Film de 5 min'},
+      {t:'Étalonnage, sound design, titrage'},
+      {t:'Reel Instagram',free:true,cond:'à activer dans les options'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'v1',name:'La Cérémonie',tag:'Forfait 1',price:1300,hours:'6h max',items:[
+      {t:'Film de 5 à 7 min + teaser 2 min'},
+      {t:'Étalonnage, sound design, titrage'},
+      {t:'Livraison HD — formats web & réseaux'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'v2',name:"L'Union",tag:'Forfait 2',price:1500,hours:'9h max',popular:true,items:[
+      {t:'Film de 10 min + teaser 2 min'},
+      {t:'Étalonnage, sound design, titrage'},
+      {t:'Livraison HD — formats web & réseaux'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'v3',name:'Le Grand Jour',tag:'Forfait 3',price:1900,hours:'12h max',items:[
+      {t:'Film de 15 min + teaser 2 min'},
+      {t:'Captation cérémonie',cond:'selon faisabilité et configuration du lieu'},
+      {t:'Étalonnage, sound design, titrage'},
+      {t:'Livraison HD — formats web & réseaux'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+  ],
+  both:[
+    {id:'b1',name:'La Cérémonie',tag:'Forfait 1',price:1900,hours:'6h max',items:[
+      {t:'Film de 5 à 7 min + teaser 2 min'},
+      {t:'~150 à 250 photos retouchées'},
+      {t:'Galerie privée HD + Livraison film'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'b2',name:"L'Union",tag:'Forfait 2',price:2300,hours:'9h max',popular:true,items:[
+      {t:'Film de 10 min + teaser 2 min'},
+      {t:'~250 à 400 photos retouchées'},
+      {t:'Galerie privée HD + Livraison film'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+    {id:'b3',name:'Le Grand Jour',tag:'Forfait 3',price:3000,hours:'12h max',items:[
+      {t:'Film de 15 min + teaser 2 min'},
+      {t:'Captation cérémonie',cond:'selon faisabilité et configuration du lieu'},
+      {t:'~400 à 550 photos retouchées'},
+      {t:'Galerie privée HD + Livraison film'},
+      {t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'},
+    ]},
+  ]
+};
+
+const MINI_VIDEO=['vi','ve'];
+
+let S={
+  step:1, type:'', forfaitId:'', photoAlacarte:'', multiday:false,
+  optTeaser:false, optCeremonie:false, optReel:false,
+  dist:'', date:'',
+  ct:{name:'',email:'',phone:'',msg:''}, sent:false
+};
+
+const getAllF=()=>[...FORFAITS.photo,...FORFAITS.video,...FORFAITS.both];
+const getF=()=>getAllF().find(x=>x.id===S.forfaitId);
+const isPhoto=()=>S.type==='photo';
+const isBoth=()=>S.type==='both';
+const isVideo=()=>S.type==='video';
+const isMini=()=>MINI_VIDEO.includes(S.forfaitId);
+const hasTeaser=()=>['v1','v2','v3','b1','b2','b3'].includes(S.forfaitId);
+const hasCeremonie=()=>['v3','b3'].includes(S.forfaitId);
+const hasReel=()=>isMini();
+
+const canNext=()=>{
+  if(S.step===1) return !!S.type;
+  if(S.step===2) return isPhoto()?(!!S.forfaitId||!!S.photoAlacarte):(!!S.forfaitId);
+  return true;
+};
+
+function calcTotal(){
+  let t=0; let surDevis=S.dist==='vlong';
+  const f=getF();
+  if(S.photoAlacarte){
+    const pa=PHOTO_ALACARTE.find(x=>x.id===S.photoAlacarte);
+    if(pa) t+=pa.price;
+  } else if(f){
+    t+=f.price;
+    if(S.optTeaser&&!hasTeaser()) t+=150;
+    if(S.optCeremonie&&!hasCeremonie()) t+=300;
+  }
+  const distExtra={mid:49,long:89,vlong:0}[S.dist]||0;
+  return {total:t+distExtra, surDevis};
+}
+
+function render(){
+  renderProg();
+  const c=document.getElementById('content');
+  const nb=document.getElementById('nb'); if(nb)nb.remove();
+  if(S.step===5){renderResult(c);return;}
+  if(S.step===1)r1(c);
+  if(S.step===2)r2(c);
+  if(S.step===3)r3(c);
+  if(S.step===4)r4(c);
+  renderNav();
+}
+
+function renderProg(){
+  if(S.step>=5){document.getElementById('progress').innerHTML='';return;}
+  document.getElementById('progress').innerHTML=STEPS.map(s=>{
+    const bc=s.id<S.step?'done':s.id===S.step?'active':'';
+    const lc=s.id<S.step?'dn':s.id===S.step?'cur':'';
+    return`<div class="prog-item"><div class="prog-bar ${bc}"></div><div class="prog-label ${lc}">${s.label}</div></div>`;
+  }).join('');
+}
+
+function r1(c){
+  c.innerHTML=`
+    <h2>Votre prestation</h2>
+    <p class="sub">Que souhaitez-vous pour votre mariage ?</p>
+    <div class="type-grid">
+      <button class="type-btn${S.type==='photo'?' sel':''}" onclick="S.type='photo';render()">
+        <span class="ti">📷</span><span class="tl">Photo</span>
+      </button>
+      <button class="type-btn${S.type==='video'?' sel':''}" onclick="S.type='video';render()">
+        <span class="ti">🎬</span><span class="tl">Vidéo</span>
+      </button>
+      <button class="type-btn${S.type==='both'?' sel':''}" onclick="S.type='both';render()">
+        <span class="ti">✨</span><span class="tl">Photo & Vidéo</span>
+      </button>
+    </div>
+    <div class="multiday-link">
+      <button onclick="S.multiday=true;S.step=5;render()">Mon mariage se déroule sur plusieurs jours →</button>
+    </div>`;
+}
+
+function r2(c){
+  if(isPhoto()){
+    const alacarte=PHOTO_ALACARTE.map(pa=>`
+      <div class="photo-card${S.photoAlacarte===pa.id?' sel':''}" onclick="S.photoAlacarte='${pa.id}';S.forfaitId='';render()">
+        <div class="pc-hours">${pa.hours}</div>
+        <div class="pc-photos">${pa.fourchette}<br>retouches mariage incluses</div>
+        <div class="pc-price">${pa.price} €</div>
+        <div class="pc-ttc">TTC</div>
+      </div>`).join('');
+    const forfaits=FORFAITS.photo.map(f=>forfaitCard(f,'photo')).join('');
+    c.innerHTML=`
+      <h2>Choisissez votre formule</h2>
+      <p class="sub">Besoin de quelques heures ? Ou couvrir toute la journée ? Choisissez ce qui vous correspond.</p>
+      <div class="section-divider">À la carte — par heure</div>
+      <p class="section-sub">Retouches mariage soignées incluses · Drone inclus*</p>
+      <div class="photo-grid">${alacarte}</div>
+      <div class="section-divider">Forfaits journée</div>
+      <p class="section-sub">Drone, TVA et déplacements jusqu'à 50 km inclus.</p>
+      ${forfaits}`;
+  } else {
+    const list=FORFAITS[S.type]||[];
+    const typeLabel={video:'Vidéo',both:'Photo & Vidéo'}[S.type]||'';
+    c.innerHTML=`
+      <h2>Choisissez votre formule</h2>
+      <p class="sub">Drone, TVA et déplacements jusqu'à 50 km inclus dans toutes les formules.</p>
+      ${list.map(f=>forfaitCard(f,typeLabel)).join('')}`;
+  }
+}
+
+function forfaitCard(f,typeLabel){
+  const items=f.items.map(i=>`
+    <li>
+      <span class="fi-dot">◆</span>
+      <span>${i.t}${i.free?`<span class="fi-free">offert</span>`:''}${i.cond?`<span class="fi-cond">* ${i.cond}</span>`:''}</span>
+    </li>`).join('');
+  const selKey=isPhoto()?'forfaitId':'forfaitId';
+  return`<div class="forfait-card${S.forfaitId===f.id?' sel':''}" onclick="S.forfaitId='${f.id}';S.photoAlacarte='';render()">
+    ${f.popular?'<div class="f-badge">✦ La plus choisie</div>':''}
+    <div class="forfait-top">
+      <div><div class="f-tag">${f.tag}${typeLabel?' · '+typeLabel:''}</div><div class="f-name">${f.name}</div></div>
+      <div><div class="f-price">${f.price.toLocaleString('fr-FR')} €</div><div class="f-ttc">TTC</div></div>
+    </div>
+    <div class="f-hours">⏱ ${f.hours}</div>
+    <ul class="f-items">${items}</ul>
+  </div>`;
+}
+
+function r3(c){
+  if(S.photoAlacarte){S.step=4;render();return;}
+  const inclTeaser=hasTeaser();
+  const inclCeremonie=hasCeremonie();
+  const inclReel=hasReel();
+  const showReel=isVideo()||isBoth();
+  const showTeaser=isVideo()||isBoth();
+  const showCeremonie=isVideo()||isBoth();
+
+  const teaserRow=showTeaser?`
+    <div class="opt-row${inclTeaser?' incl':S.optTeaser?' on':''}" ${inclTeaser?'':' onclick="S.optTeaser=!S.optTeaser;render()"'}>
+      <span class="opt-icon">🎬</span>
+      <div class="opt-body"><div class="opt-label">Teaser 2 min</div><div class="opt-desc">Format court et émotionnel pour les réseaux sociaux</div></div>
+      ${inclTeaser?'<span class="opt-incl-tag">Inclus</span>':`<span class="opt-price">+150 €</span><div class="opt-check${S.optTeaser?' on':''}">✓</div>`}
+    </div>`:'';
+
+  const ceremRow=showCeremonie?`
+    <div class="opt-row${inclCeremonie?' incl':S.optCeremonie?' on':''}" ${inclCeremonie?'':' onclick="S.optCeremonie=!S.optCeremonie;render()"'}>
+      <span class="opt-icon">💍</span>
+      <div class="opt-body"><div class="opt-label">Captation cérémonie</div><div class="opt-desc">Enregistrement intégral · selon faisabilité</div></div>
+      ${inclCeremonie?'<span class="opt-incl-tag">Inclus</span>':`<span class="opt-price">+300 €</span><div class="opt-check${S.optCeremonie?' on':''}">✓</div>`}
+    </div>`:'';
+
+  const reelRow=showReel&&inclReel?`
+    <div class="opt-row${S.optReel?' on':''}" onclick="S.optReel=!S.optReel;render()">
+      <span class="opt-icon">📱</span>
+      <div class="opt-body"><div class="opt-label">Reel Instagram</div><div class="opt-desc">Format vertical optimisé pour Instagram · offert</div></div>
+      <span class="opt-price" style="color:#D4B896">Offert</span>
+      <div class="opt-check${S.optReel?' on':''}">✓</div>
+    </div>`:'';
+
+  c.innerHTML=`
+    <h2>Options</h2>
+    <p class="sub">Personnalisez votre formule selon vos envies.</p>
+    ${teaserRow}${ceremRow}${reelRow}
+    ${!teaserRow&&!ceremRow&&!reelRow?'<p style="font-size:13px;color:#555;font-family:-apple-system,sans-serif;font-style:italic">Votre formule inclut déjà toutes les options disponibles.</p>':''}`;
+}
+
+function r4(c){
+  c.innerHTML=`
+    <h2>Derniers détails</h2>
+    <p class="sub">La date et le lieu nous aident à confirmer notre disponibilité.</p>
+    <div class="slabel">Date de votre mariage</div>
+    <input type="date" class="date-input" value="${S.date}" oninput="S.date=this.value">
+    <div class="slabel">Déplacement</div>
+    <div class="note-box"><span>✦</span><span>Les trajets de moins de 50 km sont inclus dans le tarif de base.</span></div>
+    ${drow('','Moins de 50 km','Inclus')}
+    ${drow('mid','50 à 100 km','+ 49 € TTC')}
+    ${drow('long','100 à 200 km','+ 89 € TTC')}
+    ${drow('vlong','200 km et plus','Sur devis')}`;
+}
+
+function drow(id,label,price){
+  return`<div class="dist-row${S.dist===id?' sel':''}" onclick="S.dist='${id}';render()"><span class="dl">${label}</span><span class="dp">${price}</span></div>`;
+}
+
+function renderNav(){
+  const nb=document.createElement('div');nb.id='nb';nb.className='nav';
+  if(S.step>1){const b=document.createElement('button');b.className='btn-back';b.textContent='← Retour';b.onclick=()=>{S.step--;render();};nb.appendChild(b);}
+  const ok=canNext();
+  const isLast=S.step>=4;
+  const n=document.createElement('button');
+  n.className=isLast?'btn-next gen':'btn-next go';
+  n.disabled=!ok;
+  n.textContent=isLast?'✦ Voir mon estimation':'Continuer →';
+  n.onclick=isLast?()=>{S.step=5;render();}:()=>{S.step++;render();};
+  nb.appendChild(n);
+  document.querySelector('.app').appendChild(nb);
+}
+
+function renderResult(c){
+  if(S.multiday){
+    c.innerHTML=`<div class="multiday-box"><div class="multiday-title">Mariage sur plusieurs jours</div><div class="multiday-text">Votre projet sort du cadre de nos forfaits standards.<br>Nous vous accompagnons avec un devis personnalisé, pensé spécialement pour votre célébration.</div><a href="mailto:naimikoprod@gmail.com" class="btn-mailto">Nous contacter directement</a></div><button class="btn-reset" onclick="raz()">← Retour</button>`;
+    return;
+  }
+
+  const {total,surDevis}=calcTotal();
+  const f=getF();
+  const pa=PHOTO_ALACARTE.find(x=>x.id===S.photoAlacarte);
+  const typeLabel={photo:'Photo',video:'Vidéo',both:'Photo & Vidéo'}[S.type]||'';
+  const totalStr=surDevis?'Sur devis':total.toLocaleString('fr-FR')+' €';
+  const dateStr=S.date?new Date(S.date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}):'';
+  const distLabel={'':'Inclus (moins de 50 km)',mid:'50 à 100 km (+49€)',long:'100 à 200 km (+89€)',vlong:'200 km et plus (sur devis)'}[S.dist||'']||'Inclus';
+
+  let name='', tag='', hoursStr='', lines=[];
+
+  if(pa){
+    name='Prestation photo'; tag='À la carte · '+typeLabel;
+    hoursStr=pa.hours;
+    lines.push({t:pa.hours+' de présence photographe'});
+    lines.push({t:pa.fourchette+' retouchées'});
+    lines.push({t:'Galerie privée HD'});
+    lines.push({t:'Drone inclus',cond:'soumis à météo, réglementation et autorisations'});
+    lines.push({t:'Déplacement : '+distLabel});
+  } else if(f){
+    name=f.name; tag=f.tag+' · '+typeLabel;
+    hoursStr=f.hours;
+    f.items.forEach(i=>lines.push({t:i.t+(i.free?' (offert)':''),cond:i.cond}));
+    if(S.optReel&&hasReel()) lines.push({t:'Reel Instagram',p:'Offert'});
+    if(S.optTeaser&&!hasTeaser()) lines.push({t:'Option teaser 2 min',p:'+150€'});
+    if(S.optCeremonie&&!hasCeremonie()) lines.push({t:'Option captation cérémonie',cond:'selon faisabilité',p:'+300€'});
+    lines.push({t:'Déplacement : '+distLabel});
+  }
+
+  const linesHtml=lines.map(l=>`
+    <div class="rc-line">
+      <span class="rc-dot">◆</span>
+      <span class="rc-txt">${l.t}${l.cond?`<span class="rc-cond">* ${l.cond}</span>`:''}</span>
+      ${l.p?`<span class="rc-p">${l.p}</span>`:''}
+    </div>`).join('');
+
+  const cta=S.sent?
+    `<div class="ok-box"><div style="font-size:28px;margin-bottom:10px">✦</div><div class="ok-title">Demande envoyée</div><div class="ok-text">Merci <strong>${S.ct.name}</strong> !<br>Korentin vous recontactera prochainement à <strong style="color:#D4B896">${S.ct.email}</strong><br>pour confirmer la disponibilité et échanger sur votre projet.</div></div>`:
+    `<div class="cta-box">
+      <div class="cta-title">Cette formule vous correspond ?</div>
+      <div class="cta-sub">Laissez-nous vos coordonnées — nous vous recontactons pour confirmer la disponibilité et organiser une première rencontre.</div>
+      <div class="field"><label>Vos prénoms *</label><input type="text" placeholder="Prénom & Prénom" value="${S.ct.name}" oninput="S.ct.name=this.value;rb()"></div>
+      <div class="field"><label>Email *</label><input type="email" placeholder="votre@email.com" value="${S.ct.email}" oninput="S.ct.email=this.value;rb()"></div>
+      <div class="field"><label>Téléphone</label><input type="tel" placeholder="06 xx xx xx xx" value="${S.ct.phone}" oninput="S.ct.phone=this.value"></div>
+      <div class="field"><label>Lieu & précisions</label><textarea placeholder="Commune, lieu de réception, détails…" oninput="S.ct.msg=this.value">${S.ct.msg}</textarea></div>
+      <button class="btn-send" id="bsend" onclick="doSend()" ${S.ct.name&&S.ct.email?'':'disabled'}>Envoyer notre demande</button>
+    </div>`;
+
+  c.innerHTML=`
+    <div class="result-hero">
+      <div class="rh-tag">${tag}</div>
+      <div class="rh-name">${name}</div>
+      <div class="rh-price">${totalStr}</div>
+      <div class="rh-ttc">TTC${dateStr?' · '+dateStr:''}</div>
+      <div class="rh-pill">⏱ ${hoursStr}</div>
+    </div>
+    <div class="rc"><div class="rc-hd">Ce qui est inclus</div>${linesHtml}</div>
+    <div class="drone-note">🚁 <strong>À propos du drone :</strong> inclus dans toutes les formules, son utilisation reste soumise aux conditions météo, aux autorisations préfectorales et à la réglementation de la zone de vol. En cas d'impossibilité, aucun supplément ne sera appliqué.</div>
+    ${cta}
+    <button class="btn-reset" onclick="raz()">← Nouvelle estimation</button>`;
+}
+
+function rb(){const b=document.getElementById('bsend');if(b)b.disabled=!(S.ct.name&&S.ct.email);}
+
+async function doSend(){
+  if(!S.ct.name||!S.ct.email)return;
+  const btn=document.getElementById('bsend');
+  if(btn){btn.disabled=true;btn.textContent='Envoi en cours…';}
+  const f=getF();const pa=PHOTO_ALACARTE.find(x=>x.id===S.photoAlacarte);
+  const {total,surDevis}=calcTotal();
+  const typeLabel={photo:'Photo',video:'Vidéo',both:'Photo & Vidéo'}[S.type]||'';
+  const opts=[
+    S.optReel&&hasReel()?'Reel Instagram (offert)':'',
+    S.optTeaser&&!hasTeaser()?'Teaser +150€':'',
+    S.optCeremonie&&!hasCeremonie()?'Captation cérémonie +300€':''
+  ].filter(Boolean).join(', ')||'Aucune';
+  try{
+    const res=await fetch('https://formspree.io/f/mojyeynr',{
+      method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({
+        site:'My Wedding Film',
+        noms:S.ct.name,email:S.ct.email,telephone:S.ct.phone||'',message:S.ct.msg||'',
+        prestation:typeLabel,
+        formule:pa?'À la carte '+pa.hours:(f?f.tag+' — '+f.name:''),
+        options:opts,
+        total:surDevis?'Sur devis':total.toLocaleString('fr-FR')+'€ TTC',
+        date_mariage:S.date||'Non précisée',
+        deplacement:{'':'<50km inclus',mid:'50-100km',long:'100-200km',vlong:'>200km sur devis'}[S.dist||''],
+      })
+    });
+    if(res.ok){S.sent=true;render();}else throw new Error();
+  }catch(e){
+    alert('Erreur envoi. Veuillez réessayer.');
+    if(btn){btn.disabled=false;btn.textContent='Envoyer notre demande';}
+  }
+}
+
+function raz(){
+  S={step:1,type:'',forfaitId:'',photoAlacarte:'',multiday:false,optTeaser:false,optCeremonie:false,optReel:false,dist:'',date:'',ct:{name:'',email:'',phone:'',msg:''},sent:false};
+  render();
+}
+render();
+</script>
+</body>
+</html>
